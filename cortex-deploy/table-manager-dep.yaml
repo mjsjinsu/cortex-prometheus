@@ -1,0 +1,25 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: table-manager
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: table-manager
+    spec:
+      containers:
+      - name: table-manager
+        image: mjsjinsu/table-manager:201802
+        imagePullPolicy: IfNotPresent
+        args:
+        - -server.http-listen-port=80
+        - -chunk.storage-client=cassandra
+        - -cassandra.addresses=cassandra.monitoring.svc.cluster.local:9042
+        - -cassandra.keyspace=cortex
+        - -cassandra.host-verification=false
+        - -cassandra.timeout=2000m
+        ports:
+        - containerPort: 80

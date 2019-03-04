@@ -1,0 +1,32 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ruler
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: ruler
+    spec:
+      containers:
+      - name: ruler
+        image: mjsjinsu/ruler:201802
+        imagePullPolicy: IfNotPresent
+        args:
+        - -log.level=debug
+        - -server.http-listen-port=80
+        - -ruler.configs.url=http://configs.monitoring.svc.cluster.local:80
+        - -ruler.alertmanager-url=http://alertmanager.monitoring.svc.cluster.local/api/prom/alertmanager/
+        - -consul.hostname=consul.monitoring.svc.cluster.local:8500
+        - -chunk.storage-client=cassandra
+        - -cassandra.addresses=cassandra.monitoring.svc.cluster.local:9042
+        - -cassandra.keyspace=cortex
+        - -cassandra.host-verification=false
+        - -memcached.hostname=memcached.monitoring.svc.cluster.local
+        - -memcached.timeout=100ms
+        - -memcached.service=memcached
+        - -distributor.replication-factor=1
+        ports:
+        - containerPort: 80
