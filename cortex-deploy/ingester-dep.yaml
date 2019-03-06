@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: ingester
 spec:
-  replicas: 1
+  replicas: 3
 
   # Ingesters are not ready for at least 1 min
   # after creation.  This has to be in sync with
@@ -37,16 +37,33 @@ spec:
         image: mjsjinsu/ingester:20190304
         imagePullPolicy: IfNotPresent
         args:
+        - -log.level=debug
         - -ingester.join-after=30s
-        - -ingester.claim-on-rollout=true
+        - -ingester.claim-on-rollout=false
+        - -ingester.num-tokens=512
+        - -ingester.chunk-encoding=3
+        - -ingester.max-chunk-idle=1h
         - -consul.hostname=consul.monitoring.svc.cluster.local:8500
         - -chunk.storage-client=cassandra
-        - -cassandra.addresses=cassandra.monitoring.svc.cluster.local
-        - -cassandra.keyspace=cortex
+        - -cassandra.ssl=false
         - -cassandra.host-verification=false
+        - -cassandra.addresses=cassandra.monitoring.svc.cluster.local:9042
+        - -cassandra.keyspace=cortex
+        - -cassandra.timeout=2000m
+        - -dynamodb.periodic-table.prefix=cortex_weekly_
+        - -dynamodb.periodic-table.from=2019-01-01
+        - -dynamodb.original-table-name=cortex
+        - -dynamodb.daily-buckets-from=2019-01-01
+        - -dynamodb.base64-buckets-from=2019-01-01
+        - -dynamodb.v6-schema-from=2019-01-01
+        - -dynamodb.use-periodic-tables=true
+        - -dynamodb.chunk-table.from=2019-01-01
         - -memcached.hostname=memcached.monitoring.svc.cluster.local
-        - -memcached.timeout=100ms
+        - -memcached.timeout=2000ms
         - -memcached.service=memcached
+        - -store.index-cache-write.memcached.hostname=memcached.monitoring.svc.cluster.local.
+        - -store.index-cache-write.memcached.expiration=24h
+        env:
         ports:
         - containerPort: 80
         readinessProbe:

@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: distributor
-        image: mjsjinsu/distributor:201802
+        image: mjsjinsu/distributor:20190304
         imagePullPolicy: IfNotPresent
         args:
         - -log.level=debug

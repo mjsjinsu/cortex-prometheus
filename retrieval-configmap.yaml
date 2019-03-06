@@ -1,0 +1,22 @@
+# Prometheus configuration format https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  labels:
+    kubernetes.io/cluster-service: "true"
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval:     15s
+      evaluation_interval: 30s
+
+    remote_read:
+      - url: http://13.209.128.62:30080/api/prom/read
+
+    scrape_configs:
+    - job_name: prometheus
+      static_configs:
+      - targets:
+        - localhost:9090
+

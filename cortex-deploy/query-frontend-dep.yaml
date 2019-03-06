@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: query-frontend
-        image: mjsjinsu/query-frontend:201802
+        image: mjsjinsu/query-frontend:20190304
         imagePullPolicy: IfNotPresent
         args:
         - -log.level=debug
