@@ -4,20 +4,38 @@ kind: Deployment
 metadata:
   name: distributor
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
         name: distributor
+      annotations:
+        prometheus.io/scrape: 'true'
     spec:
       containers:
       - name: distributor
         image: mjsjinsu/distributor:20190304
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
         imagePullPolicy: IfNotPresent
         args:
-        - -log.level=debug
+        - -log.level=info
         - -server.http-listen-port=80
         - -consul.hostname=consul.monitoring.svc.cluster.local:8500
-        - -distributor.replication-factor=1
+        - -distributor.replication-factor=3
+        - -distributor.ingestion-rate-limit=2500000
+        - -distributor.ingestion-burst-size=5000000
+        - -distributor.health-check-ingesters=true
+        - -ingester.max-series-per-metric=500000
+        - -ingester.client.compress-to-ingester=true
+        - -validation.max-label-names-per-series=50
+        - -validation.max-length-label-name=2048
+        - -validation.max-length-label-value=4096
+        - -validation.reject-old-samples=false
         ports:
         - containerPort: 80

@@ -26,6 +26,8 @@ spec:
     metadata:
       labels:
         name: ingester
+      annotations:
+        prometheus.io/scrape: 'true'
     spec:
       # Give ingesters 40 minutes grace to flush chunks and exit cleanly.
       # Service is available during this time, as long as we don't stop
@@ -34,16 +36,33 @@ spec:
 
       containers:
       - name: ingester
-        image: mjsjinsu/ingester:20190304
+        image: mjsjinsu/ingester:20190322
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 8Gi
+          requests:
+            cpu: 500m
+            memory: 4Gi
         imagePullPolicy: IfNotPresent
         args:
-        - -log.level=debug
+        - -log.level=info
         - -ingester.join-after=30s
         - -ingester.claim-on-rollout=false
         - -ingester.num-tokens=512
         - -ingester.chunk-encoding=3
-        - -ingester.max-chunk-idle=1h
+        - -ingester.max-chunk-idle=5m
+        - -ingester.concurrent-flushes=350
+        - -ingester.normalise-tokens=true
+        - -ingester.retain-period=5m
+        - -ingester.max-series-per-metric=100000
+        - -ingester-client.expected-timeseries=1000
+        - -ingester-client.expected-samples-per-series=2 # default of 10 is way too high
+        - -ingester.max-series-per-user=10000000
         - -consul.hostname=consul.monitoring.svc.cluster.local:8500
+        - -distributor.replication-factor=3
+        - -distributor.ingestion-rate-limit=1000000
+        - -distributor.ingestion-burst-size=5000000
         - -chunk.storage-client=cassandra
         - -cassandra.ssl=false
         - -cassandra.host-verification=false
@@ -59,11 +78,18 @@ spec:
         - -dynamodb.use-periodic-tables=true
         - -dynamodb.chunk-table.from=2019-01-01
         - -memcached.hostname=memcached.monitoring.svc.cluster.local
-        - -memcached.timeout=2000ms
+        - -memcached.timeout=1s
         - -memcached.service=memcached
+        - -store.index-cache-write.memcache.write-back-buffer=1000000
         - -store.index-cache-write.memcached.hostname=memcached.monitoring.svc.cluster.local.
         - -store.index-cache-write.memcached.expiration=24h
+        - -store.index-cache-write.memcached.timeout=1s
+        - -store.index-cache-write.memcached.service=memcache
+        - -store.min-chunk-age=5m
+        - -cache.enable-fifocache=true
         env:
+        - name: GOGC
+          value: "60"        
         ports:
         - containerPort: 80
         readinessProbe:

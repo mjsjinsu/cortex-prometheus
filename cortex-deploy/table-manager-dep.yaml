@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: table-manager
-        image: mjsjinsu/table-manager:20190304
+        image: mjsjinsu/table-manager:20190322
         imagePullPolicy: IfNotPresent
         args:
         - -server.http-listen-port=80

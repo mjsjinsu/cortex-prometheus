@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: configs
-        image: mjsjinsu/configs:201802
+        image: mjsjinsu/configs:20190322
         imagePullPolicy: IfNotPresent
         args:
         - -server.http-listen-port=80

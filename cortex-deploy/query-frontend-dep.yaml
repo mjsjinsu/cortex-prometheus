@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: query-frontend
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -13,11 +13,29 @@ spec:
       containers:
       - name: query-frontend
         image: mjsjinsu/query-frontend:20190304
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
         imagePullPolicy: IfNotPresent
         args:
         - -log.level=debug
         - -server.http-listen-port=80
         - -server.grpc-listen-port=9095
+        - -server.http-write-timeout=1m
+        - -querier.cache-results=true
+        - -querier.compress-http-responses=true
+        - -querier.split-queries-by-day=true
+        - -querier.max-outstanding-requests-per-tenant=10000
+        - -querier.max-retries-per-request=10
+        - -querier.split-queries-by-day=true
+        - -querier.align-querier-with-step=true
+        - -memcached.hostname=memcached.monitoring.svc.cluster.local
+        - -memcached.timeout=2s
+        - -memcached.service=memcached
         ports:
         - containerPort: 9095
           name: grpc

@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: ruler
-        image: mjsjinsu/ruler:201802
+        image: mjsjinsu/ruler:20190322
         imagePullPolicy: IfNotPresent
         args:
         - -log.level=debug
@@ -34,8 +34,8 @@ spec:
         - -dynamodb.use-periodic-tables=true
         - -dynamodb.chunk-table.from=2019-01-01
         - -memcached.hostname=memcached.monitoring.svc.cluster.local
-        - -memcached.timeout=100ms
+        - -memcached.timeout=2000ms
         - -memcached.service=memcached
-        - -distributor.replication-factor=1
+        - -distributor.replication-factor=3
         ports:
         - containerPort: 80

@@ -4,20 +4,35 @@ kind: Deployment
 metadata:
   name: querier
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
         name: querier
+      annotations:
+        prometheus.io/scrape: 'true'
     spec:
       containers:
       - name: querier
-        image: mjsjinsu/querier:20190304
+        image: mjsjinsu/querier:20190322
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
         imagePullPolicy: IfNotPresent
         args:
         - -server.http-listen-port=80
         - -consul.hostname=consul.monitoring.svc.cluster.local:8500
         - -querier.frontend-address=query-frontend.monitoring.svc.cluster.local:9095
+        - -querier.max-concurrent=1000
+        - -querier.query-parallelism=1000
+        - -querier.worker-parallelism=1000
+        - -querier.batch-iterators=true
+        - -querier.ingester-streaming=true
+        - -querier.timeout=5m
         - -chunk.storage-client=cassandra
         - -cassandra.addresses=cassandra.monitoring.svc.cluster.local:9042
         - -cassandra.keyspace=cortex
@@ -32,8 +47,16 @@ spec:
         - -dynamodb.use-periodic-tables=true
         - -dynamodb.chunk-table.from=2019-01-01
         - -memcached.hostname=memcached.monitoring.svc.cluster.local
-        - -memcached.timeout=100ms
+        - -memcached.timeout=1s
         - -memcached.service=memcached
-        - -distributor.replication-factor=1
+        - -store.index-cache-write.memcached.hostname=memcached.monitoring.svc.cluster.local
+        - -store.index-cache-write.memcached.timeout=1s
+        - -store.index-cache-write.memcached.service=memcached
+        - -store.index-cache-read.memcached.hostname=memcached.monitoring.svc.cluster.local
+        - -store.index-cache-read.memcached.timeout=1s
+        - -store.index-cache-read.memcached.service=memcached
+        - -store.cardinality-cache-size=10000
+        - -cache.enable-fifocache=true
+        - -distributor.replication-factor=3
         ports:
         - containerPort: 80
