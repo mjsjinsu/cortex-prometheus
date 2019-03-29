@@ -80,13 +80,17 @@ spec:
         - -memcached.hostname=memcached.monitoring.svc.cluster.local
         - -memcached.timeout=1s
         - -memcached.service=memcached
+        - -cache.enable-diskcache=true
+        - -store.index-cache-read.cache.enable-diskcache=true 
+        - -store.index-cache-read.diskcache.size=1073741824
+        - -store.index-cache-write.cache.enable-diskcache=true
+        - -store.index-cache-write.diskcache.size=1073741824
         - -store.index-cache-write.memcache.write-back-buffer=1000000
-        - -store.index-cache-write.memcached.hostname=memcached.monitoring.svc.cluster.local.
+        - -store.index-cache-write.memcached.hostname=memcached.monitoring.svc.cluster.local
         - -store.index-cache-write.memcached.expiration=24h
         - -store.index-cache-write.memcached.timeout=1s
-        - -store.index-cache-write.memcached.service=memcache
+        - -store.index-cache-write.memcached.service=memcached
         - -store.min-chunk-age=5m
-        - -cache.enable-fifocache=true
         env:
         - name: GOGC
           value: "60"        
