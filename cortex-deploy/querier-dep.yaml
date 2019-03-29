@@ -20,16 +20,17 @@ spec:
             cpu: 2000m
             memory: 2Gi
           requests:
-            cpu: 500m
+            cpu: 1000m
             memory: 1Gi
         imagePullPolicy: IfNotPresent
         args:
         - -server.http-listen-port=80
         - -consul.hostname=consul.monitoring.svc.cluster.local:8500
         - -querier.frontend-address=query-frontend.monitoring.svc.cluster.local:9095
-        - -querier.max-concurrent=1000
-        - -querier.query-parallelism=1000
-        - -querier.worker-parallelism=1000
+        - -querier.frontend-client.backoff-max-period=15s
+        - -querier.max-concurrent=10000
+        - -querier.query-parallelism=10000
+        - -querier.worker-parallelism=10000
         - -querier.batch-iterators=true
         - -querier.ingester-streaming=true
         - -querier.timeout=5m
@@ -37,7 +38,7 @@ spec:
         - -cassandra.addresses=cassandra.monitoring.svc.cluster.local:9042
         - -cassandra.keyspace=cortex
         - -cassandra.host-verification=false
-        - -cassandra.timeout=2000m
+        - -cassandra.timeout=2s
         - -dynamodb.periodic-table.prefix=cortex_weekly_
         - -dynamodb.periodic-table.from=2019-01-01
         - -dynamodb.original-table-name=cortex

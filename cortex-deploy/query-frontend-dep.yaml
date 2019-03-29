@@ -16,23 +16,26 @@ spec:
         resources:
           limits:
             cpu: 2000m
-            memory: 1Gi
+            memory: 4Gi
           requests:
-            cpu: 500m
+            cpu: 1000m
             memory: 1Gi
         imagePullPolicy: IfNotPresent
         args:
-        - -log.level=debug
+        - -log.level=info
         - -server.http-listen-port=80
         - -server.grpc-listen-port=9095
         - -server.http-write-timeout=1m
+        - -cache.enable-fifocache=true
+        - -fifocache.duration=5m
+        - -fifocache.size=104857600  #100MB
         - -querier.cache-results=true
         - -querier.compress-http-responses=true
-        - -querier.split-queries-by-day=true
+        - -querier.split-queries-by-day=false
         - -querier.max-outstanding-requests-per-tenant=10000
         - -querier.max-retries-per-request=10
-        - -querier.split-queries-by-day=true
         - -querier.align-querier-with-step=true
+        - -frontend.max-cache-freshness=10m
         - -memcached.hostname=memcached.monitoring.svc.cluster.local
         - -memcached.timeout=2s
         - -memcached.service=memcached

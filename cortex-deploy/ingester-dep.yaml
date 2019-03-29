@@ -39,11 +39,11 @@ spec:
         image: mjsjinsu/ingester:20190322
         resources:
           limits:
-            cpu: 2000m
-            memory: 8Gi
-          requests:
-            cpu: 500m
+            cpu: 4000m
             memory: 4Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
         imagePullPolicy: IfNotPresent
         args:
         - -log.level=info
@@ -68,7 +68,7 @@ spec:
         - -cassandra.host-verification=false
         - -cassandra.addresses=cassandra.monitoring.svc.cluster.local:9042
         - -cassandra.keyspace=cortex
-        - -cassandra.timeout=2000m
+        - -cassandra.timeout=1s
         - -dynamodb.periodic-table.prefix=cortex_weekly_
         - -dynamodb.periodic-table.from=2019-01-01
         - -dynamodb.original-table-name=cortex
