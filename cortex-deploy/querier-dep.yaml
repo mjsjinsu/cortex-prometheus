@@ -20,7 +20,7 @@ spec:
             cpu: 2000m
             memory: 2Gi
           requests:
-            cpu: 1000m
+            cpu: 500m
             memory: 1Gi
         imagePullPolicy: IfNotPresent
         args:
@@ -58,6 +58,8 @@ spec:
         - -store.index-cache-read.memcached.service=memcached
         - -store.cardinality-cache-size=10000
         - -cache.enable-fifocache=true
+        - -fifocache.duration=10m
+        - -fifocache.size=1073741824
         - -distributor.replication-factor=3
         ports:
         - containerPort: 80

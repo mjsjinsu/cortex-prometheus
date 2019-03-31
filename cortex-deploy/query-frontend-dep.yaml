@@ -18,7 +18,7 @@ spec:
             cpu: 2000m
             memory: 4Gi
           requests:
-            cpu: 1000m
+            cpu: 500m
             memory: 1Gi
         imagePullPolicy: IfNotPresent
         args:
@@ -27,8 +27,8 @@ spec:
         - -server.grpc-listen-port=9095
         - -server.http-write-timeout=1m
         - -cache.enable-fifocache=true
-        - -fifocache.duration=5m
-        - -fifocache.size=104857600  #100MB
+        - -fifocache.duration=10m
+        - -fifocache.size=536870912
         - -querier.cache-results=true
         - -querier.compress-http-responses=true
         - -querier.split-queries-by-day=false
